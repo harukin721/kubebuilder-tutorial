@@ -23,15 +23,22 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// 一般的にカスタムリソースのSpecはユーザーが記述するもので、システムのあるべき状態をユーザーからコントローラーに伝える用途として利用されます。
 // AmidaSpec defines the desired state of Amida
 type AmidaSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of Amida. Edit amida_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Amidaリソースの定義に結果を格納するためのフィールドを追加します。
+	// SELECTS is the list of items to select from
+	Selects []string `json:"selects,omitempty"`
+	// SELECTCOUNT is the number of items to select
+	SelectCount int32 `json:"selectCount,omitempty"`
+	// RESULTS is the list to store the selected items
+	Results []string `json:"results,omitempty"`
 }
 
+// カスタムリソースのStatusはコントローラーが記述するもので、実際のシステムの状態を表現するために利用されます。
 // AmidaStatus defines the observed state of Amida
 type AmidaStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster

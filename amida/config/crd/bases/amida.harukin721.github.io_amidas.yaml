@@ -33,15 +33,28 @@ spec:
           metadata:
             type: object
           spec:
-            description: AmidaSpec defines the desired state of Amida
+            description: 一般的にカスタムリソースのSpecはユーザーが記述するもので、システムのあるべき状態をユーザーからコントローラーに伝える用途として利用されます。
+              AmidaSpec defines the desired state of Amida
             properties:
-              foo:
-                description: Foo is an example field of Amida. Edit amida_types.go
-                  to remove/update
-                type: string
+              results:
+                description: RESULTS is the list to store the selected items
+                items:
+                  type: string
+                type: array
+              selectCount:
+                description: SELECTCOUNT is the number of items to select
+                format: int32
+                type: integer
+              selects:
+                description: Amidaリソースの定義に結果を格納するためのフィールドを追加します。 SELECTS is the list
+                  of items to select from
+                items:
+                  type: string
+                type: array
             type: object
           status:
-            description: AmidaStatus defines the observed state of Amida
+            description: カスタムリソースのStatusはコントローラーが記述するもので、実際のシステムの状態を表現するために利用されます。
+              AmidaStatus defines the observed state of Amida
             type: object
         type: object
     served: true
