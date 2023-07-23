@@ -1,0 +1,12 @@
+apiVersion: amida.harukin721.github.io/v1
+kind: Amida
+metadata:
+  labels:
+    app.kubernetes.io/name: amida
+    app.kubernetes.io/instance: amida-sample
+    app.kubernetes.io/part-of: amida
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: amida
+  name: amida-sample
+spec:
+  # TODO(user): Add fields here
