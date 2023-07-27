@@ -35,9 +35,22 @@ spec:
           spec:
             description: AmidaSpec defines the desired state of Amida
             properties:
-              foo:
+              amida:
                 description: Foo is an example field of Amida. Edit amida_types.go
                   to remove/update
+                properties:
+                  results:
+                    items:
+                      type: string
+                    type: array
+                  selectCount:
+                    type: integer
+                  selects:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              foo:
                 type: string
             type: object
           status:

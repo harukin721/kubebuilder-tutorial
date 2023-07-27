@@ -9,4 +9,11 @@ metadata:
     app.kubernetes.io/created-by: amida
   name: amida-sample
 spec:
-  # TODO(user): Add fields here
+  amida:
+    results:
+      - result1
+      - result2
+    selectCount: 2
+    selects:
+      - select1
+      - select2

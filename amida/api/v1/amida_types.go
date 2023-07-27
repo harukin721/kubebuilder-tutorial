@@ -29,7 +29,14 @@ type AmidaSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Amida. Edit amida_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Amida AmidaSpecAmida `json:"amida,omitempty"`
+	Foo   string         `json:"foo,omitempty"`
+}
+
+type AmidaSpecAmida struct {
+	Selects     []string `json:"selects,omitempty"`
+	SelectCount int      `json:"selectCount,omitempty"`
+	Results     []string `json:"results,omitempty"`
 }
 
 // AmidaStatus defines the observed state of Amida
@@ -46,7 +53,7 @@ type Amida struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   AmidaSpec   `json:"spec,omitempty"`
+	Spec   AmidaSpec   `json:"spec,omitempty"` // goのtagはjsonのtagと同じにする必要がある
 	Status AmidaStatus `json:"status,omitempty"`
 }
 
