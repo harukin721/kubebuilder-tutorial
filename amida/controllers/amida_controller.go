@@ -48,6 +48,8 @@ type AmidaReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.1/pkg/reconcile
+
+// Reconcile は Amida リソースの状態を監視する
 func (r *AmidaReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 	amida := &amidav1.Amida{}                                     // Amida リソースのインスタンスを作成する
@@ -56,7 +58,15 @@ func (r *AmidaReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 		return ctrl.Result{}, err // 取得できなかった場合はエラーを返す.再実行してくれる
 	}
 	// Amida リソースの selects が selectCount と同じ数になったら終了する
-	if len(amida.Spec.Amida.Selects) == amida.Spec.Amida.SelectCount {
+	logrus.Info("ここは通る")
+	logrus.Info("amida.Spec.Amida.Selects")
+	logrus.Info(amida.Spec.Amida.Selects)
+	logrus.Info("amida.Spec.Amida.SelectCount")
+	logrus.Info(amida.Spec.Amida.SelectCount)
+	logrus.Info("amida.Spec.Amida.Results")
+	logrus.Info(amida.Spec.Amida.Results)
+	// amida リソースの Results が selectCount と同じ数になったら終了する
+	if len(amida.Spec.Amida.Results) == amida.Spec.Amida.SelectCount {
 		logrus.Info("もういい感じになったので終了する")
 		return ctrl.Result{}, nil
 	}
@@ -68,7 +78,10 @@ func (r *AmidaReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 		logrus.Error(err, "unable to select from selects")
 		return ctrl.Result{}, err
 	}
+	// amida リソースの results に結果を追加する
 	amida.Spec.Amida.Results = results
+	logrus.Info(amida.Spec.Amida.Results)
+	// amida リソースを更新する
 	if err := r.Update(ctx, amida); err != nil {
 		logrus.Error(err, "unable to update Amida")
 		return ctrl.Result{}, err
@@ -88,6 +101,7 @@ func (r *AmidaReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 // selectCount は選択する数
 func SelectFromSelects(a *amidav1.Amida) ([]string, error) {
+	// selects から selectCount の数だけ選択する
 	results := []string{}
 	for i := 0; i < a.Spec.Amida.SelectCount; i++ { // selectCount の数だけ繰り返す(2)
 		selected := rand.Intn(len(a.Spec.Amida.Selects))          // selects の中からランダムに選択する
@@ -95,3 +109,6 @@ func SelectFromSelects(a *amidav1.Amida) ([]string, error) {
 	}
 	return results, nil
 }
+
+// k8s から amida リソースを取得する
+// selects から selectCount の数を取得する
