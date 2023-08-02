@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"math/rand"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -25,6 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	amidav1 "github.com/harukin721/kubebuilder-tutorial/amida/api/v1"
+	"github.com/sirupsen/logrus"
 )
 
 // AmidaReconciler reconciles a Amida object
@@ -48,15 +50,48 @@ type AmidaReconciler struct {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.1/pkg/reconcile
 func (r *AmidaReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
+	amida := &amidav1.Amida{}                                     // Amida リソースのインスタンスを作成する
+	if err := r.Get(ctx, req.NamespacedName, amida); err != nil { // Amida リソースを取得する
+		logrus.Error(err, "unable to fetch Amida")
+		return ctrl.Result{}, err // 取得できなかった場合はエラーを返す.再実行してくれる
+	}
+	// Amida リソースの selects が selectCount と同じ数になったら終了する
+	if len(amida.Spec.Amida.Selects) == amida.Spec.Amida.SelectCount {
+		logrus.Info("もういい感じになったので終了する")
+		return ctrl.Result{}, nil
+	}
 
-	// TODO(user): your logic here
-
+	// amida リソースの selects から selectCount の数だけ選択する
+	results, err := SelectFromSelects(amida)
+	// Go は基本的にこんな感じでエラーハンドリングをする
+	if err != nil {
+		logrus.Error(err, "unable to select from selects")
+		return ctrl.Result{}, err
+	}
+	amida.Spec.Amida.Results = results
+	if err := r.Update(ctx, amida); err != nil {
+		logrus.Error(err, "unable to update Amida")
+		return ctrl.Result{}, err
+	}
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *AmidaReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	// このコントローラーが監視するリソースを指定する
 	return ctrl.NewControllerManagedBy(mgr).
+		// Amida リソースを指定する
 		For(&amidav1.Amida{}).
+		// ログを出力する
 		Complete(r)
+}
+
+// selectCount は選択する数
+func SelectFromSelects(a *amidav1.Amida) ([]string, error) {
+	results := []string{}
+	for i := 0; i < a.Spec.Amida.SelectCount; i++ { // selectCount の数だけ繰り返す(2)
+		selected := rand.Intn(len(a.Spec.Amida.Selects))          // selects の中からランダムに選択する
+		results = append(results, a.Spec.Amida.Selects[selected]) // 選択したものを results に追加する
+	}
+	return results, nil
 }
