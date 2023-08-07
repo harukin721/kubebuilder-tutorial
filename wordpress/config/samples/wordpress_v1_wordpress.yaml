@@ -1,0 +1,12 @@
+apiVersion: wordpress.harukin721.github.io/v1
+kind: WordPress
+metadata:
+  labels:
+    app.kubernetes.io/name: wordpress
+    app.kubernetes.io/instance: wordpress-sample
+    app.kubernetes.io/part-of: wordpress
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: wordpress
+  name: wordpress-sample
+spec:
+  # TODO(user): Add fields here
